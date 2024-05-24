@@ -1,25 +1,41 @@
+import { defaultLogger, type Logger } from "./logger";
+
 type TypeInformation<T> = { __tag: "TypeInformation"; type: T };
 
 export const is = <T>(): TypeInformation<T> => {
   throw new Error("should not be invoked");
 };
 
+type Options = {
+  logger?: Logger;
+};
 export class ServiceLocator<
   ServiceDefinitions extends Record<string, unknown>,
   MissingServices = keyof ServiceDefinitions
 > {
   private registeredServices: Partial<ServiceDefinitions> = {};
+  protected logger: Logger = defaultLogger;
   serviceNames: Readonly<(keyof ServiceDefinitions)[]> = [];
 
-  protected constructor(serviceNames: Readonly<(keyof ServiceDefinitions)[]>) {
+  protected constructor(
+    serviceNames: Readonly<(keyof ServiceDefinitions)[]>,
+    options: Options
+  ) {
     this.serviceNames = serviceNames;
+
+    if (options.logger) {
+      this.logger = options.logger;
+      this.logger.debug("custom logger");
+    }
   }
 
   static buildFrom<T extends Record<string, () => TypeInformation<any>>>(
-    definition: T
+    definition: T,
+    options: Options = {}
   ): ServiceLocator<{ [Key in keyof T]: ReturnType<T[Key]>["type"] }> {
     return new ServiceLocator<{ [Key in keyof T]: ReturnType<T[Key]> }>(
-      Object.keys(definition)
+      Object.keys(definition),
+      options
     );
   }
 
@@ -91,9 +107,9 @@ export class ServiceLocator<
   >(
     firstChildren: ServiceLocator<R1, M1>,
     secondChildren: ServiceLocator<R2, M2>,
-    thirdChildren: ServiceLocator<R3, M3> = new ServiceLocator([]),
-    fourthChildren: ServiceLocator<R4, M4> = new ServiceLocator([]),
-    fifthChildren: ServiceLocator<R5, M5> = new ServiceLocator([])
+    thirdChildren: ServiceLocator<R3, M3> = new ServiceLocator([], {}),
+    fourthChildren: ServiceLocator<R4, M4> = new ServiceLocator([], {}),
+    fifthChildren: ServiceLocator<R5, M5> = new ServiceLocator([], {})
   ): ServiceLocator<R1 & R2 & R3 & R4 & R5, M1 | M2 | M3 | M4 | M5> {
     return new CompositeServiceLocator(
       new CompositeServiceLocator(firstChildren, secondChildren),
@@ -139,7 +155,7 @@ export class ServiceLocator<
         const fun: Fun = factory(...dependencies);
         return fun(...params);
       } catch (err: any) {
-        console.error(
+        this.logger.error(
           {
             params,
             dependencyNamesOrImplem,
@@ -168,7 +184,7 @@ export class ServiceLocator<
             const injected = factory(...dependencies);
             return injected[prop];
           } catch (err: any) {
-            console.error(
+            this.logger.error(
               { prop, dependencyNames, factory },
               "Service locator error (build)"
             );
@@ -184,7 +200,7 @@ export class ServiceLocator<
       (name) => this.registeredServices[name] === undefined
     );
     if (unregisteredServices.length > 0) {
-      console.error(
+      this.logger.error(
         { unregisteredServices },
         "[Service locator] some services are not registered"
       );
@@ -208,7 +224,7 @@ class CompositeServiceLocator<
     private firstChild: ServiceLocator<R1, M1>,
     private secondChild: ServiceLocator<R2, M2>
   ) {
-    super([...firstChild.serviceNames, ...secondChild.serviceNames]);
+    super([...firstChild.serviceNames, ...secondChild.serviceNames], {});
   }
 
   override getService = <T>(name: T) => {
