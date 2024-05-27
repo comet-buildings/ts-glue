@@ -1,6 +1,6 @@
 {
   "name": "ts-glue",
-  "version": "0.0.1-beta",
+  "version": "0.0.1-beta.0",
   "description": "",
   "main": "index.js",
   "type": "module",
