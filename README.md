@@ -29,14 +29,14 @@ In order to use `ts-glue`, you need to do 3 things:
 
 So let's begin by building a "ServiceLocator" object and a description of all the functions and components that it will handle.  
 Let's say we have a clock function we want to inject in our codebase:  
-```
+```typescript
 type Clock = () => Date;
 
 const systemClock: Clock = () => new Date();
 ```
 
 Our *ServiceLocator* could be set up as shown below:  
-```
+```typescript
 import { ServiceLocator, is } from "glue";
 
 const serviceLocator = 
@@ -49,7 +49,7 @@ const serviceLocator =
 
 Our service locator is now ready for use!  
 Below an example with a function and partial application:
-```
+```typescript
 const doHelloWorld = (clock: Clock) => (name: string) => `Hello world ${name} (${clock()})`;
 
 const helloWorld = serviceLocator.inject(doHelloWorld, ['clock']);
@@ -58,7 +58,7 @@ helloWorld('Glue');
 ```
 
 Our *helloWorld()* is now ready for use. If we want to inject dependencies into an object instead of a function, we need to use *ServiceLocator.build()* instead of *ServiceLocator.inject()*:
-```
+```typescript
 const buildHelloWorld = (clock: Clock) => ({ 
   sayHello: (name: string) => `Hello world ${name} (${clock()})`;
 }):
