@@ -22,7 +22,12 @@ Glue is a TypeScript library that can be installed with any package manager such
 ```
 
 # Usage
-To begin using Glue, you need to build a "ServiceLocator" object and a description of all the functions and components that it will handle.  
+In order to use Glue, you need to do 3 things:
+- Build a ServiceLocator object that will hold a descriptions of all the components and functions that might need to be injected
+- Register implementations 
+- USe the service locator to inject the implementations previously registered
+
+So let's begin by building a "ServiceLocator" object and a description of all the functions and components that it will handle.  
 Let's say we have a clock function we want to inject in our codebase:  
 ```
 type Clock = () => Date;
@@ -35,9 +40,11 @@ Our *ServiceLocato* could be set up as shown below:
 import { ServiceLocator, is } from "glue";
 
 const serviceLocator = 
-  ServiceLocator.buildFrom({
-    clock: is<Clock>,
-  });
+  ServiceLocator.buildFrom(
+    {
+      clock: is<Clock>,
+    }
+  ).registerService('clock', systemClock);
 ```
 
 Our service locator is now ready for use!  
@@ -62,6 +69,9 @@ helloWorld.sayHello('Glue');
 ```
 
 # TypeScript type level checks
+
+
+TODO playground
 TBC
 
 # Lazyness
