@@ -69,6 +69,47 @@ helloWorld.sayHello('Glue');
 ```
 
 # TypeScript type level checks
+Glue functions such as *registerService()* or *inject()*. This means that if you do a typo, TypeScript will yell at you!
+
+```typescript
+import { ServiceLocator, is } from "glue";
+
+const serviceLocator = 
+  ServiceLocator.buildFrom(
+    {
+      clock: is<Clock>,
+    }
+  )
+const doHelloWorld = (clock: Clock) => (name: string) => `Hello world ${name} (${clock()})`;
+
+
+serviceLocator.registerService('cloq', systemClock); // Compilation error 
+serviceLocator.registerService('clock', () => 'string')); // Compilation error
+
+serviceLocator.inject(doHelloWorld, ['cloq']); // compilation error
+serviceLocator.inject(doHelloWorld, []); // compilation error
+```
+
+You can also ask ts-glue to check that your configuration is complete:
+```typescript
+import { ServiceLocator, is } from "glue";
+
+const serviceLocator = 
+  ServiceLocator.buildFrom(
+    {
+      clock: is<Clock>,
+      dbConfiguration: is<DbConfiguration>
+    }
+  ).registerService('clock', systemClock);
+
+ // compilation error,  dbConfiguration is missing
+serviceLocator.checkAllServicesAreRegistered();
+
+const serviceLocator2 = serviceLocator.registerService('clock', someDbConfiguration);
+// compilation OK
+serviceLocator2.checkAllServicesAreRegistered();
+
+```
 
 
 TODO playground
