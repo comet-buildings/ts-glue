@@ -1,4 +1,4 @@
-# Glue
+# ts-glue
 
 TypeScript opiniated dependency injection library. Why another dependency injection library?  
 Most dependency injection libraries target object oriented codebases. Glue is a tiny lightweight library made for FP codebases making extensive use of partial application for dependency injection.  
@@ -11,21 +11,21 @@ See below for more detailed explanations and examples.
 
 
 # Getting started
-Glue is a TypeScript library that can be installed with any package manager such as npm or yarn:  
+`ts-glue` is a TypeScript library that can be installed with any package manager such as npm or yarn:  
 
 ```sh
   # with npm
-  npm i glue
+  npm i ts-glue
   # or yarn
-  yarn add glue
+  yarn add ts-glue
 
 ```
 
 # Usage
-In order to use Glue, you need to do 3 things:
-- Build a ServiceLocator object that will hold a descriptions of all the components and functions that might need to be injected
+In order to use `ts-glue`, you need to do 3 things:
+- Build a `ServiceLocator` object that will hold a descriptions of all the components and functions that might need to be injected
 - Register implementations 
-- USe the service locator to inject the implementations previously registered
+- Use the service locator to inject the implementations previously registered
 
 So let's begin by building a "ServiceLocator" object and a description of all the functions and components that it will handle.  
 Let's say we have a clock function we want to inject in our codebase:  
@@ -35,7 +35,7 @@ type Clock = () => Date;
 const systemClock: Clock = () => new Date();
 ```
 
-Our *ServiceLocato* could be set up as shown below:  
+Our *ServiceLocator* could be set up as shown below:  
 ```
 import { ServiceLocator, is } from "glue";
 
