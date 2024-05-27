@@ -1,7 +1,9 @@
 # ts-glue
 
-TypeScript opiniated dependency injection library. Why another dependency injection library?  
-Most dependency injection libraries target object oriented codebases. Glue is a tiny lightweight library made for FP codebases making extensive use of partial application for dependency injection.  
+TypeScript opiniated dependency injection library.  
+Why another dependency injection library?  
+Most dependency injection libraries target object oriented codebases.  
+Glue is a tiny lightweight library made for FP codebases making extensive use of partial application for dependency injection.  
 Main benefits of Glue include:  
 - **TypeScript type level** configuration checks: Glue allows to check at buidtime that all dependencies have been registered.
 - **Lazyness**: A function or a component managed by Glue can be used anywhere in your codebase without worrying when and how dependencies will be set up at runtime.  
@@ -138,6 +140,9 @@ serviceLocator.registerService('randomGenerator', () => 42);
 giveMeANumber(); // A random number 42
 
 ```
+
+ts-glue lazyness is very handy when one part of your codebase is managed by ts-glue but not everything.
+We have included in the example folder an [Express](TODO) express example app that demonstrate how to use components managed by ts-glue from Express routes that are out of the scoe of ts-glue.
 
 # Modularity
 TBC
