@@ -113,10 +113,31 @@ serviceLocator2.checkAllServicesAreRegistered();
 
 
 TODO playground
-TBC
 
 # Lazyness
-TBC
+ts-glue is very lazy :-)  
+Function dependencies are resolved at the very last moment, which is when they get executed. This means that you do 
+not have to worry too much ot the sequence order of injections and registrations:
+
+```typescript
+import { ServiceLocator, is } from "glue";
+
+type Random = () => number;
+const doGiveMeANumber = (random: Random) => `A random number ${random()}`
+
+const serviceLocator = 
+  ServiceLocator.buildFrom(
+    {
+      randomGenerator: is<Random>,
+    }
+  ).registerService('randomGenerator', Math.random);
+
+const giveMeANumber = serviceLocator.inject(doGiveMeANumber, ['randomGenerator']);
+
+serviceLocator.registerService('randomGenerator', () => 42);
+giveMeANumber(); // A random number 42
+
+```
 
 # Modularity
 TBC
