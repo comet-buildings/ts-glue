@@ -6,3 +6,10 @@ export interface Logger {
 }
 
 export const defaultLogger: Logger = console;
+
+type OnBeforeRegister = (name: string, service: any) => void;
+
+export type Options = {
+  logger?: Logger;
+  onBeforeRegister?: OnBeforeRegister;
+};

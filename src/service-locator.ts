@@ -1,20 +1,19 @@
-import { defaultLogger, type Logger } from "./logger";
+import { defaultLogger, type Options } from "./options";
 
 type TypeInformation<T> = { __tag: "TypeInformation"; type: T };
 
 export const is = <T>(): TypeInformation<T> => {
   throw new Error("should not be invoked");
 };
-
-type Options = {
-  logger?: Logger;
-};
 export class ServiceLocator<
   ServiceDefinitions extends Record<string, unknown>,
   MissingServices = keyof ServiceDefinitions
 > {
   private registeredServices: Partial<ServiceDefinitions> = {};
-  protected logger: Logger = defaultLogger;
+  protected options: Required<Options> = {
+    logger: defaultLogger,
+    onBeforeRegister: () => {},
+  };
   serviceNames: Readonly<(keyof ServiceDefinitions)[]> = [];
 
   protected constructor(
@@ -23,9 +22,9 @@ export class ServiceLocator<
   ) {
     this.serviceNames = serviceNames;
 
+    this.options = { ...this.options, ...options };
     if (options.logger) {
-      this.logger = options.logger;
-      this.logger.debug("custom logger");
+      this.options.logger.debug("custom logger");
     }
   }
 
@@ -124,7 +123,7 @@ export class ServiceLocator<
     name: T,
     service: ServiceDefinitions[T]
   ): ServiceLocator<ServiceDefinitions, Exclude<MissingServices, T>> => {
-    // TODO hook to customize
+    this.options.onBeforeRegister(String(name), service);
 
     this.registeredServices[name] = service;
     return this;
@@ -155,7 +154,7 @@ export class ServiceLocator<
         const fun: Fun = factory(...dependencies);
         return fun(...params);
       } catch (err: any) {
-        this.logger.error(
+        this.options.logger.error(
           {
             params,
             dependencyNamesOrImplem,
@@ -184,7 +183,7 @@ export class ServiceLocator<
             const injected = factory(...dependencies);
             return injected[prop];
           } catch (err: any) {
-            this.logger.error(
+            this.options.logger.error(
               { prop, dependencyNames, factory },
               "Service locator error (build)"
             );
@@ -200,7 +199,7 @@ export class ServiceLocator<
       (name) => this.registeredServices[name] === undefined
     );
     if (unregisteredServices.length > 0) {
-      this.logger.error(
+      this.options.logger.error(
         { unregisteredServices },
         "[Service locator] some services are not registered"
       );
