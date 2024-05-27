@@ -1,21 +1,22 @@
 {
-  "name": "ts-compose",
-  "version": "1.0.0",
+  "name": "ts-glue",
+  "version": "0.0.1-beta",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/comet-buildings/ts-compose.git"
+    "url": "git+https://github.com/comet-buildings/ts-glue.git"
   },
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/comet-buildings/ts-compose/issues"
+    "url": "https://github.com/comet-buildings/ts-glue/issues"
   },
-  "homepage": "https://github.com/comet-buildings/ts-compose#readme",
+  "homepage": "https://github.com/comet-buildings/ts-glue#readme",
   "devDependencies": {
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
