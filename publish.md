@@ -5,6 +5,11 @@
 npm adduser
 ```
 
+## Build package
+```sh
+npm run dist
+```
+
 ## Update package version 
 ```sh
 # For update beta
