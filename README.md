@@ -104,7 +104,7 @@ const serviceLocator =
     }
   ).registerService('clock', systemClock);
 
- // compilation error,  dbConfiguration is missing
+// compilation error, dbConfiguration is missing
 serviceLocator.checkAllServicesAreRegistered();
 
 const serviceLocator2 = serviceLocator.registerService('clock', someDbConfiguration);
@@ -142,12 +142,71 @@ giveMeANumber(); // A random number 42
 ```
 
 In the example above, we first build a service locator, we register a first random number generator and we retrieve an injected version of the
-*giveMeANumber()* function. Then we override the registered random number generator. Since dependency injection is lazy, since dependencies are resolved each time an injected function get executed, *giveMeANumber()* calls the very last registered random generator.   
+*giveMeANumber()* function. Then we override the registered random number generator. Since dependency injection is lazy, since dependencies are resolved each time an injected function get executed, *giveMeANumber()* calls the very last registered random generator.  
+   
 ts-glue lazyness is very handy when one part of your codebase is managed by ts-glue but not everything.
 We have included in the example folder an [Express](TODO) express example app that demonstrate how to use components managed by ts-glue from Express routes that are out of the scoe of ts-glue.
 
 # Modularity
-TBC
+Any significant codebase is splitted into several modules, packages... well it should be ;)  
+A big monolythic dependency injection configuration file quickly becomes hard to maintain. Hence ts-glue allows you to split your configuration in several files, composing your *ServiceLocator* from several sub *ServiceLocator* instances:
+
+
+```typescript
+
+// Let's say we have a booking package in our codebase
+// booking.ts
+export const bookingServiceLocator = 
+  ServiceLocator.buildFrom(
+    {
+      bookingService: is<BookingService>,
+      dbConfiguration: is<DbConfiguration>,
+      ...
+    }
+  ).registerService(
+    'bookingService', 
+    someBookingServiceImplementation
+  );
+
+// Let's say we have also a billing package in our codebase
+// billing.ts
+export const billingServiceLocator = 
+  ServiceLocator.buildFrom(
+    {
+      billingService: is<BillingService>,
+      dbConfiguration: is<DbConfiguration>,
+      ...
+    }
+  ).registerService(
+    'billingService', 
+    someBillingServiceImplementation
+  );
+
+// Then at the entry point of our application
+// we can gather our two previous service locators
+const appServiceLocator = ServiceLocator.compose(
+  bookingServiceLocator,
+  billingServiceLocator
+);
+
+// appServiceLocator can inject 'bookingService' and 'billingService'
+const megaSagaService = 
+  appServiceLocator.inject(
+    ..., 
+    ['bookingService', 'billingService']
+  )
+
+// at that point line below fails to compile because
+// dbConfiguration has not been registered
+appServiceLocatorv
+
+// Now it's ok and the dbConfiguration is registered
+// into both bookingServiceLocator and billingServiceLocator
+appServiceLocator
+  .registerService('dbConfiguration', SomeDbConfig)
+  .checkAllServicesAreRegistered();
+
+```
 
 # Under the cover
 TBC
