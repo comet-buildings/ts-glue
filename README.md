@@ -9,7 +9,8 @@ Main benefits of Glue include:
 - **Lazyness**: A function or a component managed by Glue can be used anywhere in your codebase without worrying when and how dependencies will be set up at runtime.  
 - **Modularity**: Glue is monorepo friendly, configuration can be splitted into several modules without losing buildtime checking nor lazyness.  
 
-See below for more detailed explanations and examples.
+
+If you are in a hurry you can start playing with ts-glue right away with this [demo sandbox](https://playcode.io/1886380)  
 
 
 # Getting started
