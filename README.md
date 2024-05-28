@@ -50,7 +50,13 @@ const serviceLocator =
 ```
 
 Our service locator is now ready for use!  
-Below an example with a function and partial application:
+
+It can be used like a regular service locator:
+```typescript
+const clock: Clock = serviceLocator.getService('clock');
+```
+
+But the ts-glue sweet spot comes with functions that can be partially applied as shown below:  
 ```typescript
 const doHelloWorld = (clock: Clock) => (name: string) => `Hello world ${name} (${clock()})`;
 
