@@ -141,6 +141,8 @@ giveMeANumber(); // A random number 42
 
 ```
 
+In the example above, we first build a service locator, we register a first random number generator and we retrieve an injected version of the
+*giveMeANumber()* function. Then we override the registered random number generator. Since dependency injection is lazy, since dependencies are resolved each time an injected function get executed, *giveMeANumber()* calls the very last registered random generator.   
 ts-glue lazyness is very handy when one part of your codebase is managed by ts-glue but not everything.
 We have included in the example folder an [Express](TODO) express example app that demonstrate how to use components managed by ts-glue from Express routes that are out of the scoe of ts-glue.
 
