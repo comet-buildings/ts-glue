@@ -39,7 +39,7 @@ const systemClock: Clock = () => new Date();
 
 Our *ServiceLocator* could be set up as shown below:  
 ```typescript
-import { ServiceLocator, is } from "glue";
+import { ServiceLocator, is } from "ts-glue";
 
 const serviceLocator = 
   ServiceLocator.buildFrom(
@@ -74,7 +74,7 @@ helloWorld.sayHello('Glue');
 Glue functions such as *registerService()* or *inject()*. This means that if you do a typo, TypeScript will yell at you!
 
 ```typescript
-import { ServiceLocator, is } from "glue";
+import { ServiceLocator, is } from "ts-glue";
 
 const serviceLocator = 
   ServiceLocator.buildFrom(
@@ -94,7 +94,7 @@ serviceLocator.inject(doHelloWorld, []); // compilation error
 
 You can also ask ts-glue to check that your configuration is complete:
 ```typescript
-import { ServiceLocator, is } from "glue";
+import { ServiceLocator, is } from "ts-glue";
 
 const serviceLocator = 
   ServiceLocator.buildFrom(
@@ -122,7 +122,7 @@ Function dependencies are resolved at the very last moment, which is when they g
 not have to worry too much ot the sequence order of injections and registrations:
 
 ```typescript
-import { ServiceLocator, is } from "glue";
+import { ServiceLocator, is } from "ts-glue";
 
 type Random = () => number;
 const doGiveMeANumber = (random: Random) => `A random number ${random()}`
