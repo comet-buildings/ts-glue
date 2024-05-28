@@ -16,7 +16,7 @@ npm version [major | minor | patch] --preid=beta
 
 ## Push new version
 ```sh
-npm adduser
+git push
 ```
 
 ## Publish
