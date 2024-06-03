@@ -16,12 +16,13 @@ describe("options", () => {
         {
           service1: is<() => string>,
         },
-        { logger }
+        { logger },
       );
 
       //When
       expect(() =>
-        (serviceLocator as any).checkAllServicesAreRegistered()
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        (serviceLocator as any).checkAllServicesAreRegistered(),
       ).toThrow();
 
       //Then
@@ -41,16 +42,17 @@ describe("options", () => {
           {
             service1: is<() => string>,
           },
-          { logger }
+          { logger },
         ),
         Glue.buildFrom({
           service2: is<() => string>,
-        })
+        }),
       );
 
       //When
       expect(() =>
-        (serviceLocator as any).checkAllServicesAreRegistered()
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        (serviceLocator as any).checkAllServicesAreRegistered(),
       ).toThrow();
 
       //Then
@@ -66,7 +68,7 @@ describe("options", () => {
         {
           service1: is<() => string>,
         },
-        { onBeforeRegister }
+        { onBeforeRegister },
       );
       const service = () => "output";
 

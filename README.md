@@ -14,7 +14,7 @@ Main benefits of Glue include:
 - **Modularity**: Glue is monorepo friendly, configuration can be splitted into several modules without losing buildtime checking nor lazyness.  
 
 
-If you are in a hurry you can start playing with `ts-glue` right away with this [demo sandbox](https://playcode.io/1886380)  
+If you are in a hurry you can start playing with `ts-glue` right away with this [demo sandbox](https://playcode.io/1893165)  
 
 
 ## Getting started
