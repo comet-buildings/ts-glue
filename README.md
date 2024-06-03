@@ -2,6 +2,16 @@
   <img alt="ts-glue amazing logo" src="https://github.com/comet-buildings/ts-glue/assets/3911114/95830240-eeb1-4c53-b4ab-1a1d9f46b9b3" width="50%" />
 </div>
 
+<br />
+
+<div align="center">
+
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/comet-buildings/ts-glue/ci.yml)
+![NPM Version](https://img.shields.io/npm/v/ts-glue)
+![NPM License](https://img.shields.io/npm/l/ts-glue)
+
+</div>
+
 # ts-glue
 
 TypeScript opiniated dependency injection library.  
