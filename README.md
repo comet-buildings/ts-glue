@@ -1,3 +1,7 @@
+<div align="center">
+  <img alt="ts-glue amazing logo" src="https://github.com/comet-buildings/ts-glue/assets/3911114/95830240-eeb1-4c53-b4ab-1a1d9f46b9b3" width="50%" />
+</div>
+
 # ts-glue
 
 TypeScript opiniated dependency injection library.  
