@@ -173,10 +173,9 @@ export class Glue<
     dependencyNames: Services<Factory, ServiceDefinitions>,
   ): ReturnType<Factory> => {
     return new Proxy(
-      {},
+      {} as ReturnType<Factory>,
       {
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        get: (_obj: any, prop: string) => {
+        get: (_obj, prop: string) => {
           try {
             const dependencies = dependencyNames.map((dep) => {
               return typeof dep === "string" ? this.getService(dep) : dep;
