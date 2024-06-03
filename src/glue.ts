@@ -5,7 +5,7 @@ type TypeInformation<T> = { __tag: "TypeInformation"; type: T };
 export const is = <T>(): TypeInformation<T> => {
   throw new Error("should not be invoked");
 };
-export class ServiceLocator<
+export class Glue<
   ServiceDefinitions extends Record<string, unknown>,
   MissingServices = keyof ServiceDefinitions
 > {
@@ -31,8 +31,8 @@ export class ServiceLocator<
   static buildFrom<T extends Record<string, () => TypeInformation<any>>>(
     definition: T,
     options: Options = {}
-  ): ServiceLocator<{ [Key in keyof T]: ReturnType<T[Key]>["type"] }> {
-    return new ServiceLocator<{ [Key in keyof T]: ReturnType<T[Key]> }>(
+  ): Glue<{ [Key in keyof T]: ReturnType<T[Key]>["type"] }> {
+    return new Glue<{ [Key in keyof T]: ReturnType<T[Key]> }>(
       Object.keys(definition),
       options
     );
@@ -44,9 +44,9 @@ export class ServiceLocator<
     R2 extends Record<string, unknown>,
     M2 extends keyof R2
   >(
-    firstChildren: ServiceLocator<R1, M1>,
-    secondChildren: ServiceLocator<R2, M2>
-  ): ServiceLocator<R1 & R2, M1 | M2>;
+    firstChildren: Glue<R1, M1>,
+    secondChildren: Glue<R2, M2>
+  ): Glue<R1 & R2, M1 | M2>;
   static compose<
     R1 extends Record<string, unknown>,
     M1 extends keyof R1,
@@ -55,10 +55,10 @@ export class ServiceLocator<
     R3 extends Record<string, unknown>,
     M3 extends keyof R3
   >(
-    firstChildren: ServiceLocator<R1, M1>,
-    secondChildren: ServiceLocator<R2, M2>,
-    thirdChildren: ServiceLocator<R3, M3>
-  ): ServiceLocator<R1 & R2 & R3, M1 | M2 | M3>;
+    firstChildren: Glue<R1, M1>,
+    secondChildren: Glue<R2, M2>,
+    thirdChildren: Glue<R3, M3>
+  ): Glue<R1 & R2 & R3, M1 | M2 | M3>;
   static compose<
     R1 extends Record<string, unknown>,
     M1 extends keyof R1,
@@ -69,11 +69,11 @@ export class ServiceLocator<
     R4 extends Record<string, unknown>,
     M4 extends keyof R4
   >(
-    firstChildren: ServiceLocator<R1, M1>,
-    secondChildren: ServiceLocator<R2, M2>,
-    thirdChildren: ServiceLocator<R3, M3>,
-    fourthChildren: ServiceLocator<R4, M4>
-  ): ServiceLocator<R1 & R2 & R3 & R4, M1 | M2 | M3 | M4>;
+    firstChildren: Glue<R1, M1>,
+    secondChildren: Glue<R2, M2>,
+    thirdChildren: Glue<R3, M3>,
+    fourthChildren: Glue<R4, M4>
+  ): Glue<R1 & R2 & R3 & R4, M1 | M2 | M3 | M4>;
   static compose<
     R1 extends Record<string, unknown>,
     M1 extends keyof R1,
@@ -86,12 +86,12 @@ export class ServiceLocator<
     R5 extends Record<string, unknown>,
     M5 extends keyof R5
   >(
-    firstChildren: ServiceLocator<R1, M1>,
-    secondChildren: ServiceLocator<R2, M2>,
-    thirdChildren: ServiceLocator<R3, M3>,
-    fourthChildren: ServiceLocator<R4, M4>,
-    fifthChildren: ServiceLocator<R5, M5>
-  ): ServiceLocator<R1 & R2 & R3 & R4 & R5, M1 | M2 | M3 | M4 | M5>;
+    firstChildren: Glue<R1, M1>,
+    secondChildren: Glue<R2, M2>,
+    thirdChildren: Glue<R3, M3>,
+    fourthChildren: Glue<R4, M4>,
+    fifthChildren: Glue<R5, M5>
+  ): Glue<R1 & R2 & R3 & R4 & R5, M1 | M2 | M3 | M4 | M5>;
   static compose<
     R1 extends Record<string, unknown>,
     M1 extends keyof R1,
@@ -104,17 +104,17 @@ export class ServiceLocator<
     R5 extends Record<string, unknown>,
     M5 extends keyof R5
   >(
-    firstChildren: ServiceLocator<R1, M1>,
-    secondChildren: ServiceLocator<R2, M2>,
-    thirdChildren: ServiceLocator<R3, M3> = new ServiceLocator([], {}),
-    fourthChildren: ServiceLocator<R4, M4> = new ServiceLocator([], {}),
-    fifthChildren: ServiceLocator<R5, M5> = new ServiceLocator([], {})
-  ): ServiceLocator<R1 & R2 & R3 & R4 & R5, M1 | M2 | M3 | M4 | M5> {
-    return new CompositeServiceLocator(
-      new CompositeServiceLocator(firstChildren, secondChildren),
-      new CompositeServiceLocator(
+    firstChildren: Glue<R1, M1>,
+    secondChildren: Glue<R2, M2>,
+    thirdChildren: Glue<R3, M3> = new Glue([], {}),
+    fourthChildren: Glue<R4, M4> = new Glue([], {}),
+    fifthChildren: Glue<R5, M5> = new Glue([], {})
+  ): Glue<R1 & R2 & R3 & R4 & R5, M1 | M2 | M3 | M4 | M5> {
+    return new CompositeGlue(
+      new CompositeGlue(firstChildren, secondChildren),
+      new CompositeGlue(
         thirdChildren,
-        new CompositeServiceLocator(fourthChildren, fifthChildren)
+        new CompositeGlue(fourthChildren, fifthChildren)
       )
     );
   }
@@ -122,7 +122,7 @@ export class ServiceLocator<
   registerService = <T extends keyof ServiceDefinitions>(
     name: T,
     service: ServiceDefinitions[T]
-  ): ServiceLocator<ServiceDefinitions, Exclude<MissingServices, T>> => {
+  ): Glue<ServiceDefinitions, Exclude<MissingServices, T>> => {
     this.options.onBeforeRegister(String(name), service);
 
     this.registeredServices[name] = service;
@@ -135,7 +135,7 @@ export class ServiceLocator<
     const service = this.registeredServices[name];
     if (!service) {
       throw new Error(
-        `[Service locator] Service ${name.toString()} is not registered`
+        `[Glue] Service ${name.toString()} is not registered`
       );
     }
     return service;
@@ -161,7 +161,7 @@ export class ServiceLocator<
             registeredServices: this.registeredServices,
             factory,
           },
-          "Service locator error"
+          "Glue error"
         );
         throw err;
       }
@@ -185,7 +185,7 @@ export class ServiceLocator<
           } catch (err: any) {
             this.options.logger.error(
               { prop, dependencyNames, factory },
-              "Service locator error (build)"
+              "Glue error (build)"
             );
             throw err;
           }
@@ -201,9 +201,9 @@ export class ServiceLocator<
     if (unregisteredServices.length > 0) {
       this.options.logger.error(
         { unregisteredServices },
-        "[Service locator] some services are not registered"
+        "[Glue] some services are not registered"
       );
-      throw new Error("[Service locator] some services are not registered");
+      throw new Error("[Glue] some services are not registered");
     }
   }) as [MissingServices] extends [never]
     ? () => void
@@ -213,15 +213,15 @@ export class ServiceLocator<
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type MissingRegisterError<i> = [never];
 
-class CompositeServiceLocator<
+class CompositeGlue<
   R1 extends Record<string, unknown>,
   M1 extends keyof R1,
   R2 extends Record<string, unknown>,
   M2 extends keyof R2
-> extends ServiceLocator<R1 & R2, M1 | M2> {
+> extends Glue<R1 & R2, M1 | M2> {
   constructor(
-    private firstChild: ServiceLocator<R1, M1>,
-    private secondChild: ServiceLocator<R2, M2>
+    private firstChild: Glue<R1, M1>,
+    private secondChild: Glue<R2, M2>
   ) {
     super([...firstChild.serviceNames, ...secondChild.serviceNames], {});
   }

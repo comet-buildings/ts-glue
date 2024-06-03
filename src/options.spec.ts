@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Logger } from "./options";
-import { ServiceLocator, is } from "./service-locator";
+import { Glue, is } from "./glue";
 
 describe("options", () => {
   describe("logger", () => {
@@ -12,7 +12,7 @@ describe("options", () => {
         warn: vi.fn(),
         error: vi.fn(),
       };
-      const serviceLocator = ServiceLocator.buildFrom(
+      const serviceLocator = Glue.buildFrom(
         {
           service1: is<() => string>,
         },
@@ -36,14 +36,14 @@ describe("options", () => {
         warn: vi.fn(),
         error: vi.fn(),
       };
-      const serviceLocator = ServiceLocator.compose(
-        ServiceLocator.buildFrom(
+      const serviceLocator = Glue.compose(
+        Glue.buildFrom(
           {
             service1: is<() => string>,
           },
           { logger }
         ),
-        ServiceLocator.buildFrom({
+        Glue.buildFrom({
           service2: is<() => string>,
         })
       );
@@ -62,7 +62,7 @@ describe("options", () => {
     it("should call onBeforeRegister hook", () => {
       //Given
       const onBeforeRegister = vi.fn();
-      const serviceLocator = ServiceLocator.buildFrom(
+      const serviceLocator = Glue.buildFrom(
         {
           service1: is<() => string>,
         },

@@ -1,1 +1,1 @@
-export * from "./service-locator";
+export * from "./glue";

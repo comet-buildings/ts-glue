@@ -1,20 +1,20 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
-import { ServiceLocator, is } from "./service-locator";
+import { Glue, is } from "./glue";
 
-describe("Service Locator", () => {
+describe("Glue", () => {
   type Pricer = (a: string) => { price: number };
 
   const aDummyPricer: Pricer = () => ({ price: 42 });
 
   it("should be built from a definition object", () => {
-    const locator = ServiceLocator.buildFrom({
+    const locator = Glue.buildFrom({
       pricer: is<Pricer>,
     });
     locator.registerService("pricer", aDummyPricer);
   });
 
   it("should inject services in a lazy way", () => {
-    const serviceLocator = ServiceLocator.buildFrom({
+    const serviceLocator = Glue.buildFrom({
       blabla: is<() => string>,
     });
     serviceLocator.registerService("blabla", () => "pas top");
@@ -29,7 +29,7 @@ describe("Service Locator", () => {
   });
 
   it("could inject not registered implementation", () => {
-    const serviceLocator = ServiceLocator.buildFrom({});
+    const serviceLocator = Glue.buildFrom({});
     const blabla = () => "top";
     const injected = serviceLocator.inject(
       (fun: () => string) => fun,
@@ -40,7 +40,7 @@ describe("Service Locator", () => {
   });
 
   it("should build services in a lazy way", () => {
-    const serviceLocator = ServiceLocator.buildFrom({
+    const serviceLocator = Glue.buildFrom({
       blabla: is<() => string>,
     });
     serviceLocator.registerService("blabla", () => "pas top");
@@ -59,7 +59,7 @@ describe("Service Locator", () => {
 
 describe("Type safety", () => {
   it("should chain registers", () => {
-    const serviceLocator = ServiceLocator.buildFrom({
+    const serviceLocator = Glue.buildFrom({
       blabla: is<() => string>,
       bullshit: is<() => number>,
     });
@@ -69,7 +69,7 @@ describe("Type safety", () => {
       .registerService("bullshit", () => 42);
 
     expectTypeOf(serviceLocator).toMatchTypeOf<
-      ServiceLocator<
+      Glue<
         {
           blabla: () => string;
           bullshit: () => number;
@@ -80,7 +80,7 @@ describe("Type safety", () => {
   });
 
   it("should expect typescript error when checking registration", () => {
-    const serviceLocator = ServiceLocator.buildFrom({
+    const serviceLocator = Glue.buildFrom({
       blabla: is<() => string>,
       bullshit: is<() => number>,
       bullshit2: is<() => number>,
@@ -93,19 +93,19 @@ describe("Type safety", () => {
   });
 });
 
-describe("Composite Service Locator", () => {
+describe("Composite Glue", () => {
   it("should provide services from both children", () => {
     // given
-    const firstServiceLocator = ServiceLocator.buildFrom({
+    const firstServiceLocator = Glue.buildFrom({
       blabla: is<() => string>,
       bullshit: is<() => number>,
     });
 
-    const secondServiceLocator = ServiceLocator.buildFrom({
+    const secondServiceLocator = Glue.buildFrom({
       echo: is<(param: string) => string>,
     });
     secondServiceLocator.registerService("echo", (coucou) => coucou);
-    const compositeLocator = ServiceLocator.compose(
+    const compositeLocator = Glue.compose(
       firstServiceLocator,
       secondServiceLocator
     );
@@ -117,17 +117,17 @@ describe("Composite Service Locator", () => {
     expect(echo("baba")).toBe("baba");
   });
 
-  it("should register services in child service locator", () => {
+  it("should register services in child glue", () => {
     // given
-    const firstServiceLocator = ServiceLocator.buildFrom({
+    const firstServiceLocator = Glue.buildFrom({
       blabla: is<() => string>,
       bullshit: is<() => number>,
     });
 
-    const secondServiceLocator = ServiceLocator.buildFrom({
+    const secondServiceLocator = Glue.buildFrom({
       echo: is<(param: string) => string>,
     });
-    const compositeLocator = ServiceLocator.compose(
+    const compositeLocator = Glue.compose(
       firstServiceLocator,
       secondServiceLocator
     );
@@ -142,21 +142,21 @@ describe("Composite Service Locator", () => {
 
   it("should provide services from all embedded locators", () => {
     // given
-    const firstServiceLocator = ServiceLocator.buildFrom({
+    const firstServiceLocator = Glue.buildFrom({
       blabla: is<() => string>,
       bullshit: is<() => number>,
     });
 
-    const secondServiceLocator = ServiceLocator.buildFrom({
+    const secondServiceLocator = Glue.buildFrom({
       echo: is<(param: string) => string>,
     }).registerService("echo", (coucou) => coucou);
 
-    const thirdServiceLocator = ServiceLocator.buildFrom({
+    const thirdServiceLocator = Glue.buildFrom({
       random: is<() => number>,
     }).registerService("random", () => 123);
 
-    const compositeLocator = ServiceLocator.compose(
-      ServiceLocator.compose(firstServiceLocator, secondServiceLocator),
+    const compositeLocator = Glue.compose(
+      Glue.compose(firstServiceLocator, secondServiceLocator),
       thirdServiceLocator
     );
 
