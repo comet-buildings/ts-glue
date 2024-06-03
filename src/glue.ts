@@ -28,12 +28,11 @@ export class Glue<
     }
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  static buildFrom<T extends Record<string, () => TypeInformation<any>>>(
-    definition: T,
+  static buildFrom<T, O extends Record<string, () => TypeInformation<T>>>(
+    definition: O,
     options: Options = {},
-  ): Glue<{ [Key in keyof T]: ReturnType<T[Key]>["type"] }> {
-    return new Glue<{ [Key in keyof T]: ReturnType<T[Key]> }>(
+  ): Glue<{ [Key in keyof O]: ReturnType<O[Key]>["type"] }> {
+    return new Glue(
       Object.keys(definition),
       options,
     );
