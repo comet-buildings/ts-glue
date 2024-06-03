@@ -18,9 +18,9 @@ If you are in a hurry you can start playing with `ts-glue` right away with this 
 
 ```sh
   # with npm
-  npm i `ts-glue`
+  npm i ts-glue
   # or yarn
-  yarn add `ts-glue`
+  yarn add ts-glue
 
 ```
 
