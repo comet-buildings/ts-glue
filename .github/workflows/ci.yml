@@ -1,0 +1,35 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [master]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  check:
+    name: 🕵️‍♂️ Check
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🏷️ Run typecheck
+        run: npm run typecheck
+
+      - name: 💄 Run lint
+        run: npm run lint
+
+      - name: 🧪 Run tests
+        run: npm run test
