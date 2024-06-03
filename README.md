@@ -14,21 +14,21 @@
 
 # ts-glue
 
-TypeScript opiniated dependency injection library.  
+TypeScript opinionated dependency injection library.  
 Why another dependency injection library?  
 Most dependency injection libraries target object oriented codebases.  
 Glue is a tiny lightweight library made for FP codebases making extensive use of partial application for dependency injection.  
-Main benefits of Glue include:  
+Main benefits of Glue include:
+
 - **TypeScript type level** configuration checks: Glue allows to check at buidtime that all dependencies have been registered.
-- **Lazyness**: A function or a component managed by Glue can be used anywhere in your codebase without worrying when and how dependencies will be set up at runtime.  
-- **Modularity**: Glue is monorepo friendly, configuration can be splitted into several modules without losing buildtime checking nor lazyness.  
+- **Lazyness**: A function or a component managed by Glue can be used anywhere in your codebase without worrying when and how dependencies will be set up at runtime.
+- **Modularity**: Glue is monorepo friendly, configuration can be splitted into several modules without losing buildtime checking nor lazyness.
 
-
-If you are in a hurry you can start playing with `ts-glue` right away with this [demo sandbox](https://playcode.io/1893165)  
-
+If you are in a hurry you can start playing with `ts-glue` right away with this [demo sandbox](https://playcode.io/1893165)
 
 ## Getting started
-`ts-glue` is a TypeScript library that can be installed with any package manager such as npm or yarn:  
+
+`ts-glue` is a TypeScript library that can be installed with any package manager such as npm or yarn:
 
 ```sh
   # with npm
@@ -39,50 +39,55 @@ If you are in a hurry you can start playing with `ts-glue` right away with this 
 ```
 
 ## Usage
+
 In order to use `ts-glue`, you need to do 3 things:
+
 - Build a `Glue` object that will hold a descriptions of all the components and functions that might need to be injected
-- Register implementations 
+- Register implementations
 - Use the glue to inject the implementations previously registered
 
 So let's begin by building a "Glue" object and a description of all the functions and components that it will handle.  
-Let's say we have a clock function we want to inject in our codebase:  
+Let's say we have a clock function we want to inject in our codebase:
+
 ```typescript
 type Clock = () => Date;
 
 const systemClock: Clock = () => new Date();
 ```
 
-Our *Glue* could be set up as shown below:  
+Our _Glue_ could be set up as shown below:
+
 ```typescript
 import { Glue, is } from "ts-glue";
 
-const glue = 
-  Glue.buildFrom(
-    {
-      clock: is<Clock>,
-    }
-  ).registerService('clock', systemClock);
+const glue = Glue.buildFrom({
+  clock: is<Clock>,
+}).registerService("clock", systemClock);
 ```
 
-Our glue is now ready for use!  
+Our glue is now ready for use!
 
 It can be used like a regular glue:
+
 ```typescript
-const clock: Clock = glue.getService('clock');
+const clock: Clock = glue.getService("clock");
 ```
 
-But the `ts-glue` sweet spot comes with functions that can be partially applied as shown below:  
+But the `ts-glue` sweet spot comes with functions that can be partially applied as shown below:
+
 ```typescript
-const doHelloWorld = (clock: Clock) => (name: string) => `Hello world ${name} (${clock()})`;
+const doHelloWorld = (clock: Clock) => (name: string) =>
+  `Hello world ${name} (${clock()})`;
 
-const helloWorld = glue.inject(doHelloWorld, ['clock']);
+const helloWorld = glue.inject(doHelloWorld, ["clock"]);
 
-helloWorld('Glue');
+helloWorld("Glue");
 ```
 
-Our *helloWorld()* is now ready for use. If we want to inject dependencies into an object instead of a function, we need to use *Glue.build()* instead of *Glue.inject()*:
+Our _helloWorld()_ is now ready for use. If we want to inject dependencies into an object instead of a function, we need to use _Glue.build()_ instead of _Glue.inject()_:
+
 ```typescript
-const buildHelloWorld = (clock: Clock) => ({ 
+const buildHelloWorld = (clock: Clock) => ({
   sayHello: (name: string) => `Hello world ${name} (${clock()})`;
 }):
 
@@ -92,12 +97,13 @@ helloWorld.sayHello('Glue');
 ```
 
 ## TypeScript type level checks
-Glue functions such as *registerService()* or *inject()*. This means that if you do a typo, TypeScript will yell at you!
+
+Glue functions such as _registerService()_ or _inject()_. This means that if you do a typo, TypeScript will yell at you!
 
 ```typescript
 import { Glue, is } from "ts-glue";
 
-const glue = 
+const glue =
   Glue.buildFrom(
     {
       clock: is<Clock>,
@@ -106,7 +112,7 @@ const glue =
 const doHelloWorld = (clock: Clock) => (name: string) => `Hello world ${name} (${clock()})`;
 
 
-glue.registerService('cloq', systemClock); // Compilation error 
+glue.registerService('cloq', systemClock); // Compilation error
 glue.registerService('clock', () => 'string')); // Compilation error
 
 glue.inject(doHelloWorld, ['cloq']); // compilation error
@@ -114,70 +120,63 @@ glue.inject(doHelloWorld, []); // compilation error
 ```
 
 You can also ask `ts-glue` to check that your configuration is complete:
+
 ```typescript
 import { Glue, is } from "ts-glue";
 
-const glue = 
-  Glue.buildFrom(
-    {
-      clock: is<Clock>,
-      dbConfiguration: is<DbConfiguration>
-    }
-  ).registerService('clock', systemClock);
+const glue = Glue.buildFrom({
+  clock: is<Clock>,
+  dbConfiguration: is<DbConfiguration>,
+}).registerService("clock", systemClock);
 
 // compilation error, dbConfiguration is missing
 glue.checkAllServicesAreRegistered();
 
-const glue2 = glue.registerService('clock', someDbConfiguration);
+const glue2 = glue.registerService("clock", someDbConfiguration);
 // compilation OK
 glue2.checkAllServicesAreRegistered();
-
 ```
-
 
 TODO playground
 
 ## Lazyness
+
 ts-glue is very lazy :-)  
-Function dependencies are resolved at the very last moment, which is when they get executed. This means that you do 
+Function dependencies are resolved at the very last moment, which is when they get executed. This means that you do
 not have to worry too much ot the sequence order of injections and registrations:
 
 ```typescript
 import { Glue, is } from "ts-glue";
 
 type Random = () => number;
-const doGiveMeANumber = (random: Random) => `A random number ${random()}`
+const doGiveMeANumber = (random: Random) => `A random number ${random()}`;
 
-const glue = 
-  Glue.buildFrom(
-    {
-      randomGenerator: is<Random>,
-    }
-  ).registerService('randomGenerator', Math.random);
+const glue = Glue.buildFrom({
+  randomGenerator: is<Random>,
+}).registerService("randomGenerator", Math.random);
 
-const giveMeANumber = glue.inject(doGiveMeANumber, ['randomGenerator']);
+const giveMeANumber = glue.inject(doGiveMeANumber, ["randomGenerator"]);
 
-glue.registerService('randomGenerator', () => 42);
+glue.registerService("randomGenerator", () => 42);
 giveMeANumber(); // A random number 42
-
 ```
 
 In the example above, we first build a glue, we register a first random number generator and we retrieve an injected version of the
-*giveMeANumber()* function. Then we override the registered random number generator. Since dependency injection is lazy, since dependencies are resolved each time an injected function get executed, *giveMeANumber()* calls the very last registered random generator.  
-   
+_giveMeANumber()_ function. Then we override the registered random number generator. Since dependency injection is lazy, since dependencies are resolved each time an injected function get executed, _giveMeANumber()_ calls the very last registered random generator.
+
 ts-glue lazyness is very handy when one part of your codebase is managed by `ts-glue` but not everything.
 We have included in the example folder an [Express](TODO) express example app that demonstrate how to use components managed by `ts-glue` from Express routes that are out of the scoe of `ts-glue`.
 
 ## Modularity
-Any significant codebase is splitted into several modules, packages... well it should be ;)  
-A big monolythic dependency injection configuration file quickly becomes hard to maintain. Hence `ts-glue` allows you to split your configuration in several files, composing your *Glue* from several sub *Glue* instances:
 
+Any significant codebase is splitted into several modules, packages... well it should be ;)  
+A big monolythic dependency injection configuration file quickly becomes hard to maintain. Hence `ts-glue` allows you to split your configuration in several files, composing your _Glue_ from several sub _Glue_ instances:
 
 ```typescript
 
 // Let's say we have a booking package in our codebase
 // booking.ts
-export const bookingGlue = 
+export const bookingGlue =
   Glue.buildFrom(
     {
       bookingService: is<BookingService>,
@@ -185,13 +184,13 @@ export const bookingGlue =
       ...
     }
   ).registerService(
-    'bookingService', 
+    'bookingService',
     someBookingServiceImplementation
   );
 
 // Let's say we have also a billing package in our codebase
 // billing.ts
-export const billingGlue = 
+export const billingGlue =
   Glue.buildFrom(
     {
       billingService: is<BillingService>,
@@ -199,7 +198,7 @@ export const billingGlue =
       ...
     }
   ).registerService(
-    'billingService', 
+    'billingService',
     someBillingServiceImplementation
   );
 
@@ -211,9 +210,9 @@ const appGlue = Glue.compose(
 );
 
 // appGlue can inject 'bookingService' and 'billingService'
-const megaSagaService = 
+const megaSagaService =
   appGlue.inject(
-    ..., 
+    ...,
     ['bookingService', 'billingService']
   )
 
@@ -230,4 +229,5 @@ appGlue
 ```
 
 ## Under the cover
+
 TBC
