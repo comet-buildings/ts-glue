@@ -137,7 +137,7 @@ const glue2 = glue.registerService("dbConfiguration", someDbConfiguration);
 glue2.checkAllServicesAreRegistered();
 ```
 
-Feel free to experiment with ts-glue in this [playground](https://playcode.io/1895132)
+Feel free to experiment with ts-glue in this [playground](https://playcode.io/1895150)
 
 ## Lazyness
 
@@ -218,7 +218,7 @@ const megaSagaService =
 
 // at that point line below fails to compile because
 // dbConfiguration has not been registered
-appGlue
+appGlue.checkAllServicesAreRegistered();
 
 // Now it's ok and the dbConfiguration is registered
 // into both bookingGlue and billingGlue
@@ -227,6 +227,8 @@ appGlue
   .checkAllServicesAreRegistered();
 
 ```
+
+See for yourself how ts-glue leverages on TypeScript type checking with this [playground](https://playcode.io/1895152)
 
 ## Under the cover
 
