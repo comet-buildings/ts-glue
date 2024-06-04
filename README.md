@@ -24,7 +24,7 @@ Main benefits of Glue include:
 - **Lazyness**: A function or a component managed by Glue can be used anywhere in your codebase without worrying when and how dependencies will be set up at runtime.
 - **Modularity**: Glue is monorepo friendly, configuration can be splitted into several modules without losing buildtime checking nor lazyness.
 
-If you are in a hurry you can start playing with `ts-glue` right away with this [demo sandbox](https://playcode.io/1893165)
+If you are in a hurry you can start playing with `ts-glue` right away with this [demo sandbox](https://playcode.io/1895128)
 
 ## Getting started
 
@@ -132,12 +132,12 @@ const glue = Glue.buildFrom({
 // compilation error, dbConfiguration is missing
 glue.checkAllServicesAreRegistered();
 
-const glue2 = glue.registerService("clock", someDbConfiguration);
+const glue2 = glue.registerService("dbConfiguration", someDbConfiguration);
 // compilation OK
 glue2.checkAllServicesAreRegistered();
 ```
 
-TODO playground
+Feel free to experiment with ts-glue in this [playground](https://playcode.io/1895132)
 
 ## Lazyness
 
