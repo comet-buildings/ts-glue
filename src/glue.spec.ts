@@ -166,9 +166,27 @@ describe("Type safety", () => {
       bullshit2: is<() => number>,
     }).registerService("bullshit", () => 42);
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-expect-error
     const runtimeCheck = () => serviceLocator.checkAllServicesAreRegistered();
+    expect(runtimeCheck).toThrow();
+  });
+
+  it("should expect typescript error when checking registration on composite", () => {
+    const serviceLocator = Glue.buildFrom({
+      bullshit: is<() => number>,
+    }).registerService("bullshit", () => 42);
+    const serviceLocator2 = Glue.buildFrom({
+      blabla: is<() => string>,
+      bullshit2: is<() => number>,
+    }).registerService("bullshit2", () => 44);
+    const serviceLocatorComposite = Glue.compose(
+      serviceLocator,
+      serviceLocator2,
+    );
+
+    const runtimeCheck = () =>
+      //@ts-expect-error
+      serviceLocatorComposite.checkAllServicesAreRegistered();
     expect(runtimeCheck).toThrow();
   });
 });
@@ -248,5 +266,23 @@ describe("Composite Glue", () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     expect(() => compositeLocator.checkAllServicesAreRegistered()).toThrow();
+  });
+
+  it("should work when all services are registered", () => {
+    const serviceLocator = Glue.buildFrom({
+      bullshit: is<() => number>,
+    }).registerService("bullshit", () => 42);
+    const serviceLocator2 = Glue.buildFrom({
+      blabla: is<() => string>,
+      bullshit2: is<() => number>,
+    })
+      .registerService("blabla", () => "toto")
+      .registerService("bullshit2", () => 44);
+    const serviceLocatorComposite = Glue.compose(
+      serviceLocator,
+      serviceLocator2,
+    );
+
+    serviceLocatorComposite.checkAllServicesAreRegistered();
   });
 });

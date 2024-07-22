@@ -1,4 +1,4 @@
-import { defaultLogger, type Options } from "./options";
+import { type Options, defaultLogger } from "./options";
 
 type TypeInformation<T> = { __tag: "TypeInformation"; type: T };
 
@@ -259,6 +259,13 @@ class CompositeGlue<
     }
     return this;
   };
+
+  override checkAllServicesAreRegistered = (() => {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    (this.firstChild as any).checkAllServicesAreRegistered();
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    (this.secondChild as any).checkAllServicesAreRegistered();
+  }) as [M1 | M2] extends [never] ? () => void : MissingRegisterError<M1 | M2>;
 }
 
 export type Services<
