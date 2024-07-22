@@ -21,7 +21,7 @@ describe("Glue", () => {
 
     const injected = serviceLocator.inject(
       (fun: () => string) => fun,
-      ["blabla"]
+      ["blabla"],
     );
     serviceLocator.registerService("blabla", () => "top");
 
@@ -33,7 +33,7 @@ describe("Glue", () => {
     const blabla = () => "top";
     const injected = serviceLocator.inject(
       (fun: () => string) => fun,
-      [blabla]
+      [blabla],
     );
 
     expect(injected()).toBe("top");
@@ -49,7 +49,7 @@ describe("Glue", () => {
       (fun: () => string) => ({
         fun,
       }),
-      ["blabla"]
+      ["blabla"],
     );
     serviceLocator.registerService("blabla", () => "top");
 
@@ -70,7 +70,7 @@ describe("Glue", () => {
           return state;
         };
       },
-      ["blabla"]
+      ["blabla"],
     );
 
     injected();
@@ -85,7 +85,7 @@ describe("Glue", () => {
 
     const injected = serviceLocator.inject(
       (fun: () => string) => fun,
-      ["blabla"]
+      ["blabla"],
     );
     injected();
     serviceLocator.registerService("blabla", () => "top");
@@ -109,7 +109,7 @@ describe("Glue", () => {
           },
         };
       },
-      ["blabla"]
+      ["blabla"],
     );
 
     builded.increment();
@@ -128,7 +128,7 @@ describe("Glue", () => {
           fun,
         };
       },
-      ["blabla"]
+      ["blabla"],
     );
     builded.fun();
     serviceLocator.registerService("blabla", () => "top");
@@ -187,7 +187,7 @@ describe("Composite Glue", () => {
     secondServiceLocator.registerService("echo", (coucou) => coucou);
     const compositeLocator = Glue.compose(
       firstServiceLocator,
-      secondServiceLocator
+      secondServiceLocator,
     );
 
     // when
@@ -209,7 +209,7 @@ describe("Composite Glue", () => {
     });
     const compositeLocator = Glue.compose(
       firstServiceLocator,
-      secondServiceLocator
+      secondServiceLocator,
     );
 
     // when
@@ -237,7 +237,7 @@ describe("Composite Glue", () => {
 
     const compositeLocator = Glue.compose(
       Glue.compose(firstServiceLocator, secondServiceLocator),
-      thirdServiceLocator
+      thirdServiceLocator,
     );
 
     // when

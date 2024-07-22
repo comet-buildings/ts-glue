@@ -7,7 +7,7 @@ export const is = <T>(): TypeInformation<T> => {
 };
 export class Glue<
   ServiceDefinitions extends Record<string, unknown>,
-  MissingServices = keyof ServiceDefinitions
+  MissingServices = keyof ServiceDefinitions,
 > {
   private registeredServices: Partial<ServiceDefinitions> = {};
   protected options: Required<Options> = {
@@ -18,7 +18,7 @@ export class Glue<
 
   protected constructor(
     serviceNames: Readonly<(keyof ServiceDefinitions)[]>,
-    options: Options
+    options: Options,
   ) {
     this.serviceNames = serviceNames;
 
@@ -30,7 +30,7 @@ export class Glue<
 
   static buildFrom<T, O extends Record<string, () => TypeInformation<T>>>(
     definition: O,
-    options: Options = {}
+    options: Options = {},
   ): Glue<{ [Key in keyof O]: ReturnType<O[Key]>["type"] }> {
     return new Glue(Object.keys(definition), options);
   }
@@ -39,10 +39,10 @@ export class Glue<
     R1 extends Record<string, unknown>,
     M1 extends keyof R1,
     R2 extends Record<string, unknown>,
-    M2 extends keyof R2
+    M2 extends keyof R2,
   >(
     firstChildren: Glue<R1, M1>,
-    secondChildren: Glue<R2, M2>
+    secondChildren: Glue<R2, M2>,
   ): Glue<R1 & R2, M1 | M2>;
   static compose<
     R1 extends Record<string, unknown>,
@@ -50,11 +50,11 @@ export class Glue<
     R2 extends Record<string, unknown>,
     M2 extends keyof R2,
     R3 extends Record<string, unknown>,
-    M3 extends keyof R3
+    M3 extends keyof R3,
   >(
     firstChildren: Glue<R1, M1>,
     secondChildren: Glue<R2, M2>,
-    thirdChildren: Glue<R3, M3>
+    thirdChildren: Glue<R3, M3>,
   ): Glue<R1 & R2 & R3, M1 | M2 | M3>;
   static compose<
     R1 extends Record<string, unknown>,
@@ -64,12 +64,12 @@ export class Glue<
     R3 extends Record<string, unknown>,
     M3 extends keyof R3,
     R4 extends Record<string, unknown>,
-    M4 extends keyof R4
+    M4 extends keyof R4,
   >(
     firstChildren: Glue<R1, M1>,
     secondChildren: Glue<R2, M2>,
     thirdChildren: Glue<R3, M3>,
-    fourthChildren: Glue<R4, M4>
+    fourthChildren: Glue<R4, M4>,
   ): Glue<R1 & R2 & R3 & R4, M1 | M2 | M3 | M4>;
   static compose<
     R1 extends Record<string, unknown>,
@@ -81,13 +81,13 @@ export class Glue<
     R4 extends Record<string, unknown>,
     M4 extends keyof R4,
     R5 extends Record<string, unknown>,
-    M5 extends keyof R5
+    M5 extends keyof R5,
   >(
     firstChildren: Glue<R1, M1>,
     secondChildren: Glue<R2, M2>,
     thirdChildren: Glue<R3, M3>,
     fourthChildren: Glue<R4, M4>,
-    fifthChildren: Glue<R5, M5>
+    fifthChildren: Glue<R5, M5>,
   ): Glue<R1 & R2 & R3 & R4 & R5, M1 | M2 | M3 | M4 | M5>;
   static compose<
     R1 extends Record<string, unknown>,
@@ -99,26 +99,26 @@ export class Glue<
     R4 extends Record<string, unknown>,
     M4 extends keyof R4,
     R5 extends Record<string, unknown>,
-    M5 extends keyof R5
+    M5 extends keyof R5,
   >(
     firstChildren: Glue<R1, M1>,
     secondChildren: Glue<R2, M2>,
     thirdChildren: Glue<R3, M3> = new Glue([], {}),
     fourthChildren: Glue<R4, M4> = new Glue([], {}),
-    fifthChildren: Glue<R5, M5> = new Glue([], {})
+    fifthChildren: Glue<R5, M5> = new Glue([], {}),
   ): Glue<R1 & R2 & R3 & R4 & R5, M1 | M2 | M3 | M4 | M5> {
     return new CompositeGlue(
       new CompositeGlue(firstChildren, secondChildren),
       new CompositeGlue(
         thirdChildren,
-        new CompositeGlue(fourthChildren, fifthChildren)
-      )
+        new CompositeGlue(fourthChildren, fifthChildren),
+      ),
     );
   }
 
   registerService = <T extends keyof ServiceDefinitions>(
     name: T,
-    service: ServiceDefinitions[T]
+    service: ServiceDefinitions[T],
   ): Glue<ServiceDefinitions, Exclude<MissingServices, T>> => {
     this.options.onBeforeRegister(String(name), service);
 
@@ -127,7 +127,7 @@ export class Glue<
   };
 
   getService = <T extends keyof ServiceDefinitions>(
-    name: T
+    name: T,
   ): ServiceDefinitions[T] => {
     const service = this.registeredServices[name];
     if (!service) {
@@ -139,9 +139,10 @@ export class Glue<
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   inject = <Factory extends (...args: any[]) => any>(
     factory: Factory,
-    dependencyNamesOrImplem: Services<Factory, ServiceDefinitions>
+    dependencyNamesOrImplem: Services<Factory, ServiceDefinitions>,
   ) => {
     type Fun = ReturnType<Factory>;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     let lastUsedDeps: any[];
     let fun: Fun;
     return (...params: Parameters<Fun>): ReturnType<Fun> => {
@@ -162,7 +163,7 @@ export class Glue<
             registeredServices: this.registeredServices,
             factory,
           },
-          "Glue error"
+          "Glue error",
         );
         throw err;
       }
@@ -172,43 +173,41 @@ export class Glue<
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   build = <Factory extends (...args: any[]) => any>(
     factory: Factory,
-    dependencyNames: Services<Factory, ServiceDefinitions>
+    dependencyNames: Services<Factory, ServiceDefinitions>,
   ): ReturnType<Factory> => {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     let lastUsedDeps: any[];
     let injected: ReturnType<Factory>;
-    return new Proxy(
-      {} as ReturnType<Factory>,
-      {
-        get: (_obj, prop: string) => {
-          try {
-            const dependencies = dependencyNames.map((dep) => {
-              return typeof dep === "string" ? this.getService(dep) : dep;
-            });
-            if (!injected || depsAreNotEqual(lastUsedDeps, dependencies)) {
-              lastUsedDeps = dependencies;
-              injected = factory(...dependencies);
-            }
-            return injected[prop];
-          } catch (err: unknown) {
-            this.options.logger.error(
-              { prop, dependencyNames, factory },
-              "Glue error (build)"
-            );
-            throw err;
+    return new Proxy({} as ReturnType<Factory>, {
+      get: (_obj, prop: string) => {
+        try {
+          const dependencies = dependencyNames.map((dep) => {
+            return typeof dep === "string" ? this.getService(dep) : dep;
+          });
+          if (!injected || depsAreNotEqual(lastUsedDeps, dependencies)) {
+            lastUsedDeps = dependencies;
+            injected = factory(...dependencies);
           }
-        },
-      }
-    );
+          return injected[prop];
+        } catch (err: unknown) {
+          this.options.logger.error(
+            { prop, dependencyNames, factory },
+            "Glue error (build)",
+          );
+          throw err;
+        }
+      },
+    });
   };
 
   checkAllServicesAreRegistered = (() => {
     const unregisteredServices = this.serviceNames.filter(
-      (name) => this.registeredServices[name] === undefined
+      (name) => this.registeredServices[name] === undefined,
     );
     if (unregisteredServices.length > 0) {
       this.options.logger.error(
         { unregisteredServices },
-        "[Glue] some services are not registered"
+        "[Glue] some services are not registered",
       );
       throw new Error("[Glue] some services are not registered");
     }
@@ -227,11 +226,11 @@ class CompositeGlue<
   R1 extends Record<string, unknown>,
   M1 extends keyof R1,
   R2 extends Record<string, unknown>,
-  M2 extends keyof R2
+  M2 extends keyof R2,
 > extends Glue<R1 & R2, M1 | M2> {
   constructor(
     private firstChild: Glue<R1, M1>,
-    private secondChild: Glue<R2, M2>
+    private secondChild: Glue<R2, M2>,
   ) {
     super([...firstChild.serviceNames, ...secondChild.serviceNames], {});
   }
@@ -248,7 +247,7 @@ class CompositeGlue<
 
   override registerService = <T extends keyof R1 | keyof R2>(
     name: T,
-    service: (R1 & R2)[T]
+    service: (R1 & R2)[T],
   ) => {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const rawName: any = name;
@@ -265,7 +264,7 @@ class CompositeGlue<
 export type Services<
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   Factory extends (...args: any) => any,
-  RegisteredServices
+  RegisteredServices,
 > = Implem<Parameters<Factory>, RegisteredServices>;
 
 type Implem<FactoryParameters extends string[], RegisteredServices> = {
