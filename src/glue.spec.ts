@@ -21,7 +21,7 @@ describe("Glue", () => {
 
     const injected = serviceLocator.inject(
       (fun: () => string) => fun,
-      ["blabla"],
+      ["blabla"]
     );
     serviceLocator.registerService("blabla", () => "top");
 
@@ -33,7 +33,7 @@ describe("Glue", () => {
     const blabla = () => "top";
     const injected = serviceLocator.inject(
       (fun: () => string) => fun,
-      [blabla],
+      [blabla]
     );
 
     expect(injected()).toBe("top");
@@ -49,11 +49,91 @@ describe("Glue", () => {
       (fun: () => string) => ({
         fun,
       }),
-      ["blabla"],
+      ["blabla"]
     );
     serviceLocator.registerService("blabla", () => "top");
 
     expect(injected.fun()).toBe("top");
+  });
+
+  it("should keep same injected output reference when deps have not changed", () => {
+    const serviceLocator = Glue.buildFrom({
+      blabla: is<() => string>,
+    });
+    serviceLocator.registerService("blabla", () => "pas top");
+
+    const injected = serviceLocator.inject(
+      (_fun: () => string) => {
+        let state = 0;
+        return () => {
+          state++;
+          return state;
+        };
+      },
+      ["blabla"]
+    );
+
+    injected();
+    expect(injected()).toEqual(2);
+  });
+
+  it("should reapply deps to function when deps have changed", () => {
+    const serviceLocator = Glue.buildFrom({
+      blabla: is<() => string>,
+    });
+    serviceLocator.registerService("blabla", () => "pas top");
+
+    const injected = serviceLocator.inject(
+      (fun: () => string) => fun,
+      ["blabla"]
+    );
+    injected();
+    serviceLocator.registerService("blabla", () => "top");
+
+    expect(injected()).toBe("top");
+  });
+
+  it("should keep same object reference when deps have not changed", () => {
+    const serviceLocator = Glue.buildFrom({
+      blabla: is<() => string>,
+    });
+    serviceLocator.registerService("blabla", () => "pas top");
+
+    const builded = serviceLocator.build(
+      (_fun: () => string) => {
+        let state = 0;
+        return {
+          increment: () => {
+            state++;
+            return state;
+          },
+        };
+      },
+      ["blabla"]
+    );
+
+    builded.increment();
+    expect(builded.increment()).toEqual(2);
+  });
+
+  it("should rebuild object when deps have changed", () => {
+    const serviceLocator = Glue.buildFrom({
+      blabla: is<() => string>,
+    });
+    serviceLocator.registerService("blabla", () => "pas top");
+
+    const builded = serviceLocator.build(
+      (fun: () => string) => {
+        return {
+          fun,
+        };
+      },
+      ["blabla"]
+    );
+    builded.fun();
+    serviceLocator.registerService("blabla", () => "top");
+
+    expect(builded.fun()).toBe("top");
   });
 });
 
@@ -107,7 +187,7 @@ describe("Composite Glue", () => {
     secondServiceLocator.registerService("echo", (coucou) => coucou);
     const compositeLocator = Glue.compose(
       firstServiceLocator,
-      secondServiceLocator,
+      secondServiceLocator
     );
 
     // when
@@ -129,7 +209,7 @@ describe("Composite Glue", () => {
     });
     const compositeLocator = Glue.compose(
       firstServiceLocator,
-      secondServiceLocator,
+      secondServiceLocator
     );
 
     // when
@@ -157,7 +237,7 @@ describe("Composite Glue", () => {
 
     const compositeLocator = Glue.compose(
       Glue.compose(firstServiceLocator, secondServiceLocator),
-      thirdServiceLocator,
+      thirdServiceLocator
     );
 
     // when
