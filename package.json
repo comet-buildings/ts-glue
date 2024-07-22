@@ -1,6 +1,6 @@
 {
   "name": "ts-glue",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "TypeScript opinionated dependency injection library. Glue is a tiny lightweight library made for FP codebases making extensive use of partial application for dependency injection.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
