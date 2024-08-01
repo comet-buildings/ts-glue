@@ -200,6 +200,19 @@ export class Glue<
     });
   };
 
+  prepareSetup = <T extends Glue<ServiceDefinitions, MissingServices>>(
+    setupFunction: (glue: Glue<ServiceDefinitions, MissingServices>) => T,
+  ) => {
+    let result: T;
+    return () => {
+      if (!result) {
+        result = setupFunction(this);
+      }
+
+      return result;
+    };
+  };
+
   checkAllServicesAreRegistered = (() => {
     const unregisteredServices = this.serviceNames.filter(
       (name) => this.registeredServices[name] === undefined,

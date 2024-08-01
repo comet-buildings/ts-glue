@@ -1,4 +1,4 @@
-import { describe, expect, expectTypeOf, it } from "vitest";
+import { describe, expect, expectTypeOf, it, vi } from "vitest";
 import { Glue, is } from "./glue";
 
 describe("Glue", () => {
@@ -284,5 +284,25 @@ describe("Composite Glue", () => {
     );
 
     serviceLocatorComposite.checkAllServicesAreRegistered();
+  });
+
+  it("should call setup only once", () => {
+    const fnToCallOnce = vi.fn();
+    type UserRepository = unknown;
+    const userGlue = Glue.buildFrom({
+      users: is<UserRepository>,
+    });
+
+    const setupUserGlue = userGlue.prepareSetup((glue) => {
+      fnToCallOnce();
+      return glue.registerService("users", {});
+    });
+
+    const serviceLocatorComposite = Glue.compose(
+      setupUserGlue(),
+      setupUserGlue(),
+    );
+
+    expect(fnToCallOnce).toBeCalledTimes(1);
   });
 });
