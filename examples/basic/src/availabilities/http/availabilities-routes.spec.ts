@@ -12,14 +12,14 @@ describe('Availabilities routes', () => {
   availabilitiesRoutes(router);
   setupTests().checkAllServicesAreRegistered();
 
-  it('should return 400 when no number of participants', async () => {
+  it('should return 400 when no number of participants specified', async () => {
     // given // when
     const response = await request(app).get('/api/availabilities');
     // then
     expect(response.status).toEqual(400);
   });
 
-  it('should return availabilities', async () => {
+  it('should return availabilities for specified number of participants', async () => {
     // given // when
     const response = await request(app).get('/api/availabilities?numberOfParticipants=2');
     // then
