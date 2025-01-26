@@ -2,7 +2,6 @@ import express from 'express';
 import Router from 'express-promise-router';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
-import { setupTests } from '../../glue-test';
 import { availabilitiesRoutes } from './availabilities-routes';
 
 describe('Availabilities routes', () => {
@@ -10,7 +9,6 @@ describe('Availabilities routes', () => {
   const router = Router();
   app.use('/api', router);
   availabilitiesRoutes(router);
-  setupTests().checkAllServicesAreRegistered();
 
   it('should return 400 when no number of participants specified', async () => {
     // given // when
