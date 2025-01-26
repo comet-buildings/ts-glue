@@ -6,8 +6,6 @@ export type DatabaseConfiguration = {
 
 export const buildAvailabilitiesRepository = (configuration: DatabaseConfiguration): AvailabilitiesRepository => {
     return {
-        find: async (date, numberOfParticipants) => {
-            throw new Error('DB connection error')
-        },
+        find: async (date, numberOfParticipants) => new Promise((_, reject) => setTimeout(reject, 5000)),
     }
 }

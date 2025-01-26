@@ -1,5 +1,5 @@
 import type { Router } from 'express';
-import { findAvailabilities } from '../availabilities-glue';
+import { findAvailabilities } from '../availabilities-di';
 import { DateTime } from 'luxon';
 
 export const availabilitiesRoutes = (router: Router) => {
