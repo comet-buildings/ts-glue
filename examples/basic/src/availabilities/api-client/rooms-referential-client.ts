@@ -6,8 +6,6 @@ export type ApiConfiguration = {
 
 export const buildRoomsReferentialClient = (configuration: ApiConfiguration): RoomsReferentialClient => {
     return {
-        findAll: async () => {
-            throw new Error('api does not respond');
-        },
+        findAll: () => new Promise((_, reject) => setTimeout(reject, 5000))
     }
 }
