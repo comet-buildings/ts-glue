@@ -1,13 +1,15 @@
 import { fakeAvailabilitiesRepository } from "./availabilities/fake-availabilities-repository";
-import { fakeRoomsReferentialClient } from "./availabilities/fake-rooms-referential-client";
+import { fakeRoomsReferentialClient } from "./rooms/fake-rooms-referential-client";
 import { appGlue } from "./glue";
 
 export const setupTests = appGlue.prepareSetup((glue) => {
   const configuredGlue = glue
     .registerService("availabilitiesRepository", fakeAvailabilitiesRepository)
     .registerService("roomsReferentialClient", fakeRoomsReferentialClient)
-    .registerService("databaseConfiguration", { url: "https://fake.db" })
-    .registerService("apiConfiguration", { baseUrl: "https://fake.api" });
+    .registerService("serverConfiguration", {
+      url: "https://fake.db",
+      baseUrl: "https://fake.api",
+    });
 
   configuredGlue.checkAllServicesAreRegistered();
 
