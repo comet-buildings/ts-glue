@@ -1,7 +1,7 @@
 import type { RoomsReferentialClient } from "../rooms";
 
 export type ApiConfiguration = {
-  baseUrl: string;
+  roomsApiBaseUrl: string;
 };
 
 export const buildRoomsReferentialClient = (

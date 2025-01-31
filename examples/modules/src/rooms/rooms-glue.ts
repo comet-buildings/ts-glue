@@ -6,13 +6,13 @@ import {
 import type { RoomsReferentialClient } from "./rooms";
 
 export const roomsGlue = Glue.buildFrom({
-  serverConfiguration: is<ApiConfiguration>,
+  roomsApiConfiguration: is<ApiConfiguration>,
   roomsReferentialClient: is<RoomsReferentialClient>,
 });
 
 export const setupRooms = roomsGlue.prepareSetup((glue) => {
   return glue.registerService(
     "roomsReferentialClient",
-    glue.build(buildRoomsReferentialClient, ["serverConfiguration"]),
+    glue.build(buildRoomsReferentialClient, ["roomsApiConfiguration"]),
   );
 });

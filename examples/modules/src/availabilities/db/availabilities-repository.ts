@@ -1,7 +1,7 @@
 import type { AvailabilitiesRepository } from "../availabilities";
 
 export type DatabaseConfiguration = {
-  url: string;
+  dbUrl: string;
 };
 
 export const buildAvailabilitiesRepository = (

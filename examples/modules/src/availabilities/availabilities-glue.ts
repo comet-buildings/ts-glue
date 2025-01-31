@@ -11,7 +11,7 @@ import { setupRooms } from "../rooms/rooms-glue";
 
 export const availabilitiesGlue = Glue.compose(
   Glue.buildFrom({
-    serverConfiguration: is<DatabaseConfiguration>,
+    databaseConfiguration: is<DatabaseConfiguration>,
     availabilitiesRepository: is<AvailabilitiesRepository>,
   }),
   setupRooms(),
@@ -25,6 +25,6 @@ export const findAvailabilities = availabilitiesGlue.inject(
 export const setupAvailabilities = availabilitiesGlue.prepareSetup((glue) => {
   return glue.registerService(
     "availabilitiesRepository",
-    glue.build(buildAvailabilitiesRepository, ["serverConfiguration"]),
+    glue.build(buildAvailabilitiesRepository, ["databaseConfiguration"]),
   );
 });

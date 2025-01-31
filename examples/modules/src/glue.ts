@@ -1,21 +1,20 @@
-import { Glue, is } from "ts-glue";
+import { Glue } from "ts-glue";
 import { setupAvailabilities } from "./availabilities/availabilities-glue";
-import { setupRooms } from "./rooms/rooms-glue";
+import { setupUsers } from "./users/users-glue";
 
-export const appGlue = Glue.compose(
-  Glue.buildFrom({ serverConfiguration: is<ServerConfiguration> }),
-  setupAvailabilities(),
-  setupRooms(),
-);
+export const appGlue = Glue.compose(setupAvailabilities(), setupUsers());
 
 export const setupApp = appGlue.prepareSetup((glue) => {
-  return glue.registerService("serverConfiguration", parseConfiguration());
+  const config = parseConfiguration();
+
+  return glue
+    .registerService("databaseConfiguration", config)
+    .registerService("roomsApiConfiguration", config);
 });
 
-type ServerConfiguration = { url: string; baseUrl: string };
 const parseConfiguration = () => {
   return {
-    url: "https://user@db.com",
-    baseUrl: "https://rooms.api.comet.team",
+    dbUrl: "https://user@db.com",
+    roomsApiBaseUrl: "https://rooms.api.comet.team",
   };
 };
