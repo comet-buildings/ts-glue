@@ -1,4 +1,5 @@
 import { Glue, is } from "ts-glue";
+import type { RoomsReferentialClient } from "../rooms/rooms";
 import {
   type AvailabilitiesRepository,
   buildFindAvailabilities,
@@ -7,15 +8,17 @@ import {
   buildAvailabilitiesRepository,
   type DatabaseConfiguration,
 } from "./db/availabilities-repository";
-import { setupRooms } from "../rooms/rooms-glue";
+import {
+  buildRoomsReferentialClient,
+  type ApiConfiguration,
+} from "../rooms/api-client/rooms-referential-client";
 
-export const availabilitiesGlue = Glue.compose(
-  Glue.buildFrom({
-    databaseConfiguration: is<DatabaseConfiguration>,
-    availabilitiesRepository: is<AvailabilitiesRepository>,
-  }),
-  setupRooms(),
-);
+export const availabilitiesGlue = Glue.buildFrom({
+  databaseConfiguration: is<DatabaseConfiguration>,
+  availabilitiesRepository: is<AvailabilitiesRepository>,
+  roomsApiConfiguration: is<ApiConfiguration>,
+  roomsReferentialClient: is<RoomsReferentialClient>,
+});
 
 export const findAvailabilities = availabilitiesGlue.inject(
   buildFindAvailabilities,
@@ -23,8 +26,13 @@ export const findAvailabilities = availabilitiesGlue.inject(
 );
 
 export const setupAvailabilities = availabilitiesGlue.prepareSetup((glue) => {
-  return glue.registerService(
-    "availabilitiesRepository",
-    glue.build(buildAvailabilitiesRepository, ["databaseConfiguration"]),
-  );
+  return glue
+    .registerService(
+      "availabilitiesRepository",
+      glue.build(buildAvailabilitiesRepository, ["databaseConfiguration"]),
+    )
+    .registerService(
+      "roomsReferentialClient",
+      glue.build(buildRoomsReferentialClient, ["roomsApiConfiguration"]),
+    );
 });

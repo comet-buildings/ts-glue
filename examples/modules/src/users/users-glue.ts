@@ -6,13 +6,13 @@ import {
 } from "./db/users-repository";
 
 export const usersGlue = Glue.buildFrom({
-  databaseConfiguration: is<DatabaseConfiguration>,
+  dbConfiguration: is<DatabaseConfiguration>,
   usersRepository: is<UsersRepository>,
 });
 
 export const setupUsers = usersGlue.prepareSetup((glue) => {
   return glue.registerService(
     "usersRepository",
-    glue.build(buildUsersRepository, ["databaseConfiguration"]),
+    glue.build(buildUsersRepository, ["dbConfiguration"]),
   );
 });
